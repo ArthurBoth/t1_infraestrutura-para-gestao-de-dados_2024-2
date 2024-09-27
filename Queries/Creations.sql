@@ -24,7 +24,8 @@ CREATE TABLE air_passengers_details
 ALTER TABLE air_airplane_types
     ADD CONSTRAINT pk_airplane_types PRIMARY KEY (airplane_type_id);
 ALTER TABLE air_airports
-    ADD CONSTRAINT pk_airports PRIMARY KEY (airport_id);
+    ADD CONSTRAINT pk_airports PRIMARY KEY (airport_id)
+    ADD CONSTRAINT unq_icao UNIQUE (icao);
 ALTER TABLE air_airports_geo
     ADD CONSTRAINT pk_airports_geo PRIMARY KEY (airport_id)
     ADD CONSTRAINT fk_airports_geo_airport_id FOREIGN KEY (airport_id)
@@ -32,7 +33,8 @@ ALTER TABLE air_airports_geo
 ALTER TABLE air_airlines
     ADD CONSTRAINT pk_airlines PRIMARY KEY (airline_id)
     ADD CONSTRAINT fk_base_airport_id FOREIGN KEY (base_airport_id) 
-        REFERENCES air_airports (airport_id);
+        REFERENCES air_airports (airport_id)
+    ADD CONSTRAINT unq_iata UNIQUE (iata);
 ALTER TABLE air_airplanes
     ADD CONSTRAINT pk_airplanes PRIMARY KEY (airplane_id)
     ADD CONSTRAINT fk_airplanes_airline_id FOREIGN KEY (airline_id)
@@ -48,7 +50,8 @@ ALTER TABLE air_flights_schedules
     ADD CONSTRAINT fk_flights_sched_to_id FOREIGN KEY (to_airport_id)
         REFERENCES air_airports (airport_id);
 ALTER TABLE air_passengers
-    ADD CONSTRAINT pk_passengers PRIMARY KEY (passenger_id);
+    ADD CONSTRAINT pk_passengers PRIMARY KEY (passenger_id)
+    ADD CONSTRAINT unq_passportno UNIQUE (passportno);
 ALTER TABLE air_passengers_details
     ADD CONSTRAINT pk_passengers_details PRIMARY KEY (passenger_id)
     ADD CONSTRAINT fk_passengers_det_psng_id FOREIGN KEY (passenger_id)
@@ -70,4 +73,5 @@ ALTER TABLE air_bookings
     ADD CONSTRAINT fk_bookings_passenger_id FOREIGN KEY (passenger_id)
         REFERENCES air_passengers (passenger_id)
     ADD CONSTRAINT fk_bookings_flight_id FOREIGN KEY (flight_id)
-        REFERENCES air_flights (flight_id);
+        REFERENCES air_flights (flight_id)
+    ADD CONSTRAINT unq_flight_seat UNIQUE (flight_id, seat);
