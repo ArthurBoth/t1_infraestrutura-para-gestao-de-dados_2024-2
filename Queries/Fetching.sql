@@ -45,7 +45,7 @@ FROM
     air_airplanes planes
             ON flights.airplane_id = planes.airplane_id
         INNER JOIN
-    AIR_AIRPLANE_TYPES plane_types
+    air_airplane_types plane_types
             ON planes.airplane_type_id = plane_types.airplane_type_id
 WHERE 
     location_from.country LIKE location_to.country
@@ -136,9 +136,54 @@ WHERE
     Crie uma consulta que seja resolvida adequadamente com um acesso hash em um 
     cluster com pelo menos duas tabelas. A consulta deve utilizar todas as 
     tabelas do cluster e pelo menos outra tabela fora dele.
+    Consulta escolhida:
+    Listar o numero do voo, nome da cidade do destino, nome do aeroporto e 
+    assento de passageiros idosos
 */
-
-
-
-
-
+-- Fetch WITHOUT clusters
+SELECT
+    flights.flightno,
+    to_geo.city,
+    airports.name,
+    bookings.seat,
+    TRUNC(MONTHS_BETWEEN(SYSDATE, passengers.birthdate) / 12) AS age
+FROM
+    air_flights flights
+        INNER JOIN
+    air_airports airports
+            ON flights.to_airport_id = airports.airport_id
+        INNER JOIN
+    air_airports_geo to_geo
+            ON airports.airport_id = to_geo.airport_id
+        INNER JOIN
+    air_bookings bookings
+            ON flights.flight_id = bookings.flight_id
+        INNER JOIN
+    air_passengers_details passengers
+            ON bookings.passenger_id = passengers.passenger_id
+WHERE
+    passengers.birthdate <= ADD_MONTHS(SYSDATE, -60*12);
+    
+-- Fetch WITH clusters
+SELECT
+    flights.flightno,
+    to_geo.city,
+    airports.name,
+    bookings.seat,
+    TRUNC(MONTHS_BETWEEN(SYSDATE, passengers.birthdate) / 12) AS age
+FROM
+    air_flights_cl flights
+        INNER JOIN
+    air_airports_cl airports
+            ON flights.to_airport_id = airports.airport_id
+        INNER JOIN
+    air_airports_geo_cl to_geo
+            ON airports.airport_id = to_geo.airport_id
+        INNER JOIN
+    air_bookings bookings
+            ON flights.flight_id = bookings.flight_id
+        INNER JOIN
+    air_passengers_details passengers
+            ON bookings.passenger_id = passengers.passenger_id
+WHERE
+    passengers.birthdate <= ADD_MONTHS(SYSDATE, -60*12);
